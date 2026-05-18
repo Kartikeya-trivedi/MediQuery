@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
     proxy: {
       "/api": {
         // MediQuery — Clinical RAG Server (Gemma 4 26B / Llama 3.1 8B)
-        target: "https://mindrix--mediquery-rag-server-ragserver-serve.modal.run",
+        target: "https://kartikeyatrivedi4oct2004--mediquery-rag-server-ragserver-serve.modal.run",
         // KTGPT v1 — Legacy (kept for reference)
         // target: "https://kartikeyatrivedi4oct2004--ktgpt-server-ktgptserver-serve-dev.modal.run",
         changeOrigin: true,
