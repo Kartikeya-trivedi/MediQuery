@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://kartikeyatrivedi4oct2004--mediquery-rag-server-ragserver-serve.modal.run/$1"
+      "destination": "https://mindrix--mediquery-rag-server-ragserver-serve.modal.run/$1"
     },
     {
       "source": "/api",
-      "destination": "https://kartikeyatrivedi4oct2004--mediquery-rag-server-ragserver-serve.modal.run/"
+      "destination": "https://mindrix--mediquery-rag-server-ragserver-serve.modal.run/"
     }
   ]
 }

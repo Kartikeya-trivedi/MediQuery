@@ -211,19 +211,43 @@ class RAGServer:
         sys.path.insert(0, "/app/backend")
 
         from sentence_transformers import SentenceTransformer, CrossEncoder
+        from huggingface_hub import snapshot_download
+
+        def ensure_model(repo_id: str, local_dir: str):
+            """Download model from HuggingFace if not already on the volume."""
+            if os.path.exists(local_dir) and any(
+                f.endswith((".safetensors", ".bin", ".json"))
+                for f in os.listdir(local_dir)
+            ):
+                print(f"✅ Found {local_dir}")
+                return
+            print(f"⬇️  {local_dir} not found — downloading {repo_id}...")
+            snapshot_download(
+                repo_id,
+                local_dir=local_dir,
+                token=os.environ.get("HF_TOKEN"),
+            )
+            vol.commit()
+            print(f"✅ Downloaded {repo_id} → {local_dir}")
+
+        # ── Auto-download small models if missing ───────────────────────────
+        embedder_path = f"{MOUNT}/multilingual-e5-large"
+        reranker_path = f"{MOUNT}/ms-marco-MiniLM-L-6-v2"
+        nli_path = f"{MOUNT}/nli-deberta-v3-base"
+
+        ensure_model("intfloat/multilingual-e5-large", embedder_path)
+        ensure_model("cross-encoder/ms-marco-MiniLM-L-6-v2", reranker_path)
+        ensure_model("cross-encoder/nli-deberta-v3-base", nli_path)
 
         # ── Load embedding model ────────────────────────────────────────────
-        embedder_path = f"{MOUNT}/multilingual-e5-large"
         print(f"Loading embedder from {embedder_path}...")
         self.embedder = SentenceTransformer(embedder_path)
 
         # ── Load reranker ───────────────────────────────────────────────────
-        reranker_path = f"{MOUNT}/ms-marco-MiniLM-L-6-v2"
         print(f"Loading reranker from {reranker_path}...")
         self.reranker = CrossEncoder(reranker_path)
 
         # ── Load NLI model ──────────────────────────────────────────────────
-        nli_path = f"{MOUNT}/nli-deberta-v3-base"
         print(f"Loading NLI model from {nli_path}...")
         self.nli_model = CrossEncoder(nli_path)
 
