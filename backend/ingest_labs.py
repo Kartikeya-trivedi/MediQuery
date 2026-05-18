@@ -5,7 +5,7 @@ import modal
 
 app = modal.App("mediquery-ingest-labs")
 
-vol = modal.Volume.from_name("mediquery-rag-models")
+vol = modal.Volume.from_name("ktgpt-rag-models")
 MOUNT = "/models"
 
 ingest_image = (
@@ -45,7 +45,7 @@ def process_lab_data(limit_admissions: int = 100):
     for f in files_needed:
         if not os.path.exists(f"{MOUNT}/{f}"):
             print(f"❌ Error: {MOUNT}/{f} not found.")
-            print(f"Please upload all 4 files via: modal volume put mediquery-rag-models {f} /")
+            print(f"Please upload all 4 files via: modal volume put ktgpt-rag-models {f} /")
             return
 
     print("📊 Loading CSVs into Memory...")

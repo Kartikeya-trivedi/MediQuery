@@ -6,7 +6,7 @@ import modal
 app = modal.App("mediquery-ingest")
 
 # Mount the same volume used by the RAG server
-vol = modal.Volume.from_name("mediquery-rag-models")
+vol = modal.Volume.from_name("ktgpt-rag-models")
 MOUNT = "/models"
 
 # Use the same image dependencies as the RAG Server
@@ -51,7 +51,7 @@ def process_mimic_csv(csv_filename: str = "NOTEEVENTS.csv", limit: int = 100):
     csv_path = f"{MOUNT}/{csv_filename}"
     if not os.path.exists(csv_path):
         print(f"❌ Error: {csv_path} not found on the Modal volume.")
-        print(f"Please run: modal volume put mediquery-rag-models {csv_filename} /")
+        print(f"Please run: modal volume put ktgpt-rag-models {csv_filename} /")
         return
 
     print("🚀 Loading Embedding Model...")

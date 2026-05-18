@@ -30,7 +30,7 @@ import modal
 # ─────────────────────────────────────────────────────────────────────────────
 app = modal.App("mediquery-rag-server")
 
-vol = modal.Volume.from_name("mediquery-rag-models", create_if_missing=True)
+vol = modal.Volume.from_name("ktgpt-rag-models", create_if_missing=True)
 MOUNT = "/models"
 
 # ── Images ───────────────────────────────────────────────────────────────────
