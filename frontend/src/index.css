@@ -2,102 +2,115 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Claude.ai-inspired design system. Warm cream, ink black, terracotta accent. All HSL. */
+/* MediQuery — Clinical Decision Support Design System
+   Deep navy + teal accent + clean medical aesthetic. All HSL. */
 
 @layer base {
   :root {
-    /* Warm paper background — Claude's signature cream */
-    --background: 40 33% 96%;
-    --foreground: 30 8% 14%;
+    /* Clinical white background — clean, sterile, professional */
+    --background: 210 20% 98%;
+    --foreground: 215 25% 12%;
 
-    --surface: 40 30% 93%;
-    --surface-elevated: 40 40% 98%;
+    --surface: 210 18% 95%;
+    --surface-elevated: 0 0% 100%;
 
-    --card: 40 40% 98%;
-    --card-foreground: 30 8% 14%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 12%;
 
-    --popover: 40 40% 98%;
-    --popover-foreground: 30 8% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 12%;
 
-    /* Terracotta — Claude's brand accent */
-    --primary: 16 56% 51%;
-    --primary-foreground: 40 40% 98%;
-    --primary-soft: 16 60% 94%;
+    /* Teal — clinical primary accent */
+    --primary: 172 66% 40%;
+    --primary-foreground: 0 0% 100%;
+    --primary-soft: 172 40% 94%;
 
-    --secondary: 40 22% 88%;
-    --secondary-foreground: 30 8% 14%;
+    --secondary: 210 14% 89%;
+    --secondary-foreground: 215 25% 12%;
 
-    --muted: 40 20% 90%;
-    --muted-foreground: 30 6% 42%;
+    --muted: 210 14% 93%;
+    --muted-foreground: 215 12% 48%;
 
-    --accent: 16 60% 94%;
-    --accent-foreground: 16 56% 35%;
+    --accent: 172 40% 94%;
+    --accent-foreground: 172 66% 28%;
 
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 40 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 36 14% 84%;
-    --input: 36 14% 84%;
-    --ring: 16 56% 51%;
+    --border: 210 14% 88%;
+    --input: 210 14% 88%;
+    --ring: 172 66% 40%;
 
-    --radius: 0.875rem;
+    --radius: 0.75rem;
 
     /* Chat-specific */
-    --user-bubble: 40 30% 90%;
-    --user-bubble-foreground: 30 8% 14%;
+    --user-bubble: 210 16% 92%;
+    --user-bubble-foreground: 215 25% 12%;
     --assistant-bg: transparent;
 
     /* Sidebar */
-    --sidebar-background: 40 28% 92%;
-    --sidebar-foreground: 30 8% 22%;
-    --sidebar-primary: 16 56% 51%;
-    --sidebar-primary-foreground: 40 40% 98%;
-    --sidebar-accent: 40 22% 86%;
-    --sidebar-accent-foreground: 30 8% 14%;
-    --sidebar-border: 36 14% 82%;
-    --sidebar-ring: 16 56% 51%;
+    --sidebar-background: 215 25% 15%;
+    --sidebar-foreground: 210 20% 85%;
+    --sidebar-primary: 172 66% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 25% 20%;
+    --sidebar-accent-foreground: 210 20% 90%;
+    --sidebar-border: 215 25% 22%;
+    --sidebar-ring: 172 66% 50%;
+
+    /* Clinical status colors */
+    --clinical-safe: 152 60% 42%;
+    --clinical-warning: 38 92% 50%;
+    --clinical-danger: 0 72% 51%;
+    --clinical-info: 210 90% 56%;
 
     /* Shadows & gradients */
-    --shadow-soft: 0 1px 2px 0 hsl(30 8% 14% / 0.04), 0 1px 3px 0 hsl(30 8% 14% / 0.06);
-    --shadow-elevated: 0 4px 16px -2px hsl(30 8% 14% / 0.08), 0 2px 6px -1px hsl(30 8% 14% / 0.04);
-    --shadow-composer: 0 2px 24px -4px hsl(30 8% 14% / 0.08), 0 1px 3px 0 hsl(30 8% 14% / 0.06);
-    --gradient-fade: linear-gradient(to bottom, hsl(40 33% 96% / 0), hsl(40 33% 96% / 1));
+    --shadow-soft: 0 1px 3px 0 hsl(215 25% 12% / 0.04), 0 1px 2px -1px hsl(215 25% 12% / 0.06);
+    --shadow-elevated: 0 4px 16px -2px hsl(215 25% 12% / 0.08), 0 2px 6px -1px hsl(215 25% 12% / 0.04);
+    --shadow-composer: 0 2px 20px -4px hsl(172 66% 40% / 0.12), 0 1px 4px 0 hsl(215 25% 12% / 0.06);
+    --gradient-fade: linear-gradient(to bottom, hsl(210 20% 98% / 0), hsl(210 20% 98% / 1));
 
     --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
-    --background: 30 8% 10%;
-    --foreground: 40 30% 92%;
-    --surface: 30 8% 13%;
-    --surface-elevated: 30 8% 15%;
-    --card: 30 8% 13%;
-    --card-foreground: 40 30% 92%;
-    --popover: 30 8% 13%;
-    --popover-foreground: 40 30% 92%;
-    --primary: 16 56% 56%;
-    --primary-foreground: 30 8% 10%;
-    --primary-soft: 16 30% 22%;
-    --secondary: 30 8% 18%;
-    --secondary-foreground: 40 30% 92%;
-    --muted: 30 8% 18%;
-    --muted-foreground: 40 10% 64%;
-    --accent: 16 30% 22%;
-    --accent-foreground: 16 56% 70%;
-    --border: 30 8% 22%;
-    --input: 30 8% 22%;
-    --ring: 16 56% 56%;
-    --user-bubble: 30 8% 18%;
-    --user-bubble-foreground: 40 30% 92%;
-    --sidebar-background: 30 8% 8%;
-    --sidebar-foreground: 40 20% 80%;
-    --sidebar-primary: 16 56% 56%;
-    --sidebar-primary-foreground: 30 8% 10%;
-    --sidebar-accent: 30 8% 16%;
-    --sidebar-accent-foreground: 40 30% 92%;
-    --sidebar-border: 30 8% 18%;
-    --sidebar-ring: 16 56% 56%;
-    --gradient-fade: linear-gradient(to bottom, hsl(30 8% 10% / 0), hsl(30 8% 10% / 1));
+    --background: 215 28% 8%;
+    --foreground: 210 20% 92%;
+    --surface: 215 25% 11%;
+    --surface-elevated: 215 25% 13%;
+    --card: 215 25% 11%;
+    --card-foreground: 210 20% 92%;
+    --popover: 215 25% 11%;
+    --popover-foreground: 210 20% 92%;
+    --primary: 172 66% 50%;
+    --primary-foreground: 215 28% 8%;
+    --primary-soft: 172 30% 18%;
+    --secondary: 215 22% 18%;
+    --secondary-foreground: 210 20% 92%;
+    --muted: 215 22% 16%;
+    --muted-foreground: 210 14% 58%;
+    --accent: 172 30% 18%;
+    --accent-foreground: 172 66% 68%;
+    --border: 215 22% 20%;
+    --input: 215 22% 20%;
+    --ring: 172 66% 50%;
+    --user-bubble: 215 22% 16%;
+    --user-bubble-foreground: 210 20% 92%;
+    --sidebar-background: 215 28% 6%;
+    --sidebar-foreground: 210 16% 75%;
+    --sidebar-primary: 172 66% 50%;
+    --sidebar-primary-foreground: 215 28% 8%;
+    --sidebar-accent: 215 25% 14%;
+    --sidebar-accent-foreground: 210 20% 92%;
+    --sidebar-border: 215 22% 16%;
+    --sidebar-ring: 172 66% 50%;
+
+    --clinical-safe: 152 60% 50%;
+    --clinical-warning: 38 92% 58%;
+    --clinical-danger: 0 72% 58%;
+    --clinical-info: 210 90% 62%;
+
+    --gradient-fade: linear-gradient(to bottom, hsl(215 28% 8% / 0), hsl(215 28% 8% / 1));
   }
 }
 
@@ -110,54 +123,97 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter Tight', 'Styrene B', system-ui, -apple-system, sans-serif;
-    font-feature-settings: 'ss01', 'cv11';
+    font-family: 'Inter', 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
   }
   .font-serif {
-    font-family: 'Source Serif 4', 'Tiempos Headline', 'Copernicus', Georgia, serif;
-    font-feature-settings: 'ss01';
+    font-family: 'DM Serif Display', Georgia, serif;
   }
   .font-mono {
     font-family: 'JetBrains Mono', ui-monospace, monospace;
   }
+  .font-display {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
 }
 
 @layer components {
-  .prose-claude {
+  .prose-clinical {
     @apply text-foreground leading-relaxed;
   }
-  .prose-claude p { @apply my-3; }
-  .prose-claude p:first-child { @apply mt-0; }
-  .prose-claude p:last-child { @apply mb-0; }
-  .prose-claude h1 { @apply font-serif text-2xl font-medium mt-6 mb-3; }
-  .prose-claude h2 { @apply font-serif text-xl font-medium mt-5 mb-2; }
-  .prose-claude h3 { @apply font-serif text-lg font-medium mt-4 mb-2; }
-  .prose-claude ul { @apply list-disc pl-6 my-3 space-y-1; }
-  .prose-claude ol { @apply list-decimal pl-6 my-3 space-y-1; }
-  .prose-claude code {
+  .prose-clinical p { @apply my-3; }
+  .prose-clinical p:first-child { @apply mt-0; }
+  .prose-clinical p:last-child { @apply mb-0; }
+  .prose-clinical h1 { @apply font-serif text-2xl font-medium mt-6 mb-3; }
+  .prose-clinical h2 { @apply font-serif text-xl font-medium mt-5 mb-2; }
+  .prose-clinical h3 { @apply text-lg font-semibold mt-4 mb-2; }
+  .prose-clinical ul { @apply list-disc pl-6 my-3 space-y-1; }
+  .prose-clinical ol { @apply list-decimal pl-6 my-3 space-y-1; }
+  .prose-clinical code {
     @apply font-mono text-[0.85em] bg-muted px-1.5 py-0.5 rounded;
   }
-  .prose-claude pre {
+  .prose-clinical pre {
     @apply font-mono text-sm bg-foreground/[0.04] border border-border rounded-lg p-4 my-4 overflow-x-auto;
   }
-  .prose-claude pre code {
+  .prose-clinical pre code {
     @apply bg-transparent p-0;
   }
-  .prose-claude a {
+  .prose-clinical a {
     @apply text-primary underline underline-offset-2 hover:opacity-80;
   }
-  .prose-claude blockquote {
+  .prose-clinical blockquote {
     @apply border-l-2 border-primary/40 pl-4 italic text-muted-foreground my-3;
   }
-  .prose-claude strong { @apply font-semibold; }
+  .prose-clinical strong { @apply font-semibold; }
+
+  /* Clinical status pill */
+  .clinical-badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide;
+  }
+  .clinical-badge-safe {
+    @apply clinical-badge ring-1;
+    background: hsl(var(--clinical-safe) / 0.1);
+    color: hsl(var(--clinical-safe));
+    --tw-ring-color: hsl(var(--clinical-safe) / 0.2);
+  }
+  .clinical-badge-warning {
+    @apply clinical-badge ring-1;
+    background: hsl(var(--clinical-warning) / 0.1);
+    color: hsl(var(--clinical-warning));
+    --tw-ring-color: hsl(var(--clinical-warning) / 0.2);
+  }
+  .clinical-badge-danger {
+    @apply clinical-badge ring-1;
+    background: hsl(var(--clinical-danger) / 0.1);
+    color: hsl(var(--clinical-danger));
+    --tw-ring-color: hsl(var(--clinical-danger) / 0.2);
+  }
+  .clinical-badge-info {
+    @apply clinical-badge ring-1;
+    background: hsl(var(--clinical-info) / 0.1);
+    color: hsl(var(--clinical-info));
+    --tw-ring-color: hsl(var(--clinical-info) / 0.2);
+  }
+
+  /* Heartbeat line animation for MediQuery logo */
+  .heartbeat-line {
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    animation: heartbeat-draw 2.5s ease-in-out infinite;
+  }
+  @keyframes heartbeat-draw {
+    0% { stroke-dashoffset: 200; }
+    50% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -200; }
+  }
 }
 
 @layer utilities {
-  .scrollbar-thin::-webkit-scrollbar { width: 8px; height: 8px; }
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
   .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
   .scrollbar-thin::-webkit-scrollbar-thumb {
     background: hsl(var(--border));
-    border-radius: 4px;
+    border-radius: 3px;
   }
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground) / 0.4);
@@ -175,6 +231,9 @@
   .animate-pulse-soft {
     animation: pulse-soft 1.6s ease-in-out infinite;
   }
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
 }
 
 @keyframes fade-in {
@@ -191,4 +250,8 @@
 @keyframes pulse-soft {
   0%, 100% { opacity: 0.4; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.15); }
+}
+@keyframes glow {
+  from { box-shadow: 0 0 8px hsl(var(--primary) / 0.2); }
+  to { box-shadow: 0 0 20px hsl(var(--primary) / 0.4); }
 }

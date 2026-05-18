@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowUp, Paperclip, Globe, FileText, Loader2 } from "lucide-react";
+import { ArrowUp, Paperclip, Globe, FileText, Loader2, HeartPulse } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface UploadedDoc {
@@ -20,7 +20,7 @@ interface ComposerProps {
 export const Composer = ({
   onSend,
   disabled,
-  placeholder = "Reply to KT GPT…",
+  placeholder = "Ask a clinical question…",
   autoFocus,
   uploadedDocs = [],
   onFileUpload,
@@ -85,17 +85,19 @@ export const Composer = ({
 
   return (
     <div className="w-full">
-      {/* Uploaded docs pills */}
+      {/* Uploaded clinical docs pills */}
       {uploadedDocs.length > 0 && (
         <div className="mb-2 flex flex-wrap items-center gap-1.5 px-1">
           {uploadedDocs.map((doc, i) => (
             <span
               key={i}
-              className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-[11px] font-medium text-primary"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-[11px] font-medium text-primary ring-1 ring-primary/20"
             >
               <FileText className="h-3 w-3" />
               {doc.filename}
-              <span className="text-primary/60">({doc.chunks} chunks{doc.dedup_removed ? `, ${doc.dedup_removed} dupes removed` : ""})</span>
+              <span className="text-primary/60">
+                ({doc.chunks} chunks{doc.dedup_removed ? `, ${doc.dedup_removed} deduped` : ""})
+              </span>
             </span>
           ))}
         </div>
@@ -103,9 +105,9 @@ export const Composer = ({
 
       <div
         className={cn(
-          "group relative rounded-3xl border border-border bg-surface-elevated",
+          "group relative rounded-2xl border border-border bg-surface-elevated",
           "shadow-[var(--shadow-composer)] transition-all duration-200",
-          "focus-within:border-primary/40 focus-within:shadow-[0_4px_28px_-4px_hsl(var(--primary)/0.18)]",
+          "focus-within:border-primary/50 focus-within:shadow-[0_4px_28px_-4px_hsl(var(--primary)/0.18)]",
           webSearch && "ring-2 ring-blue-500/30 border-blue-500/40"
         )}
       >
@@ -113,7 +115,7 @@ export const Composer = ({
         {webSearch && (
           <div className="flex items-center gap-1.5 px-5 pt-3 pb-0">
             <Globe className="h-3.5 w-3.5 text-blue-500" />
-            <span className="text-[11px] font-medium text-blue-500">Web Search enabled</span>
+            <span className="text-[11px] font-medium text-blue-500">Medical literature search enabled</span>
           </div>
         )}
 
@@ -123,11 +125,11 @@ export const Composer = ({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={onKey}
-          placeholder={webSearch ? "Search the web and ask KT GPT…" : placeholder}
+          placeholder={webSearch ? "Search medical literature…" : placeholder}
           disabled={disabled}
           className={cn(
             "w-full resize-none bg-transparent px-5 pt-4 pb-2",
-            "text-[15px] leading-relaxed text-foreground placeholder:text-muted-foreground/70",
+            "text-[15px] leading-relaxed text-foreground placeholder:text-muted-foreground/60",
             "outline-none scrollbar-thin",
             webSearch && "pt-2"
           )}
@@ -138,7 +140,7 @@ export const Composer = ({
             <input
               ref={fileRef}
               type="file"
-              accept=".txt,.md,.pdf"
+              accept=".txt,.md,.pdf,.csv"
               onChange={handleFileSelect}
               className="hidden"
             />
@@ -147,7 +149,7 @@ export const Composer = ({
               onClick={() => fileRef.current?.click()}
               disabled={uploading}
               className={cn(
-                "flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-colors",
+                "flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-colors",
                 uploading
                   ? "text-primary animate-pulse"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -158,33 +160,34 @@ export const Composer = ({
               ) : (
                 <Paperclip className="h-3.5 w-3.5" />
               )}
-              {uploading ? "Indexing…" : "Attach"}
+              {uploading ? "Indexing…" : "Upload EHR"}
             </button>
             <button
               type="button"
               onClick={() => setWebSearch(!webSearch)}
               className={cn(
-                "flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-colors",
+                "flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-colors",
                 webSearch
                   ? "bg-blue-500/15 text-blue-500 ring-1 ring-blue-500/25"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
               <Globe className="h-3.5 w-3.5" />
-              Search
+              PubMed
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <span className="hidden sm:inline text-[11px] text-muted-foreground/70 font-mono">
-              KT GPT v2
+            <span className="hidden sm:inline-flex items-center gap-1 text-[10px] text-muted-foreground/60 font-mono">
+              <HeartPulse className="h-2.5 w-2.5" />
+              MediQuery
             </span>
             <button
               type="button"
               onClick={submit}
               disabled={!value.trim() || disabled}
-              aria-label="Send message"
+              aria-label="Send clinical query"
               className={cn(
-                "flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200",
+                "flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200",
                 value.trim() && !disabled
                   ? "bg-primary text-primary-foreground hover:opacity-90 scale-100"
                   : "bg-muted text-muted-foreground/50 scale-95"
@@ -195,8 +198,8 @@ export const Composer = ({
           </div>
         </div>
       </div>
-      <p className="mt-2 text-center text-[11px] text-muted-foreground/70">
-        KT GPT can make mistakes. Please double-check responses.
+      <p className="mt-2 text-center text-[11px] text-muted-foreground/60">
+        MediQuery is for clinical decision support only. All outputs require physician review.
       </p>
     </div>
   );

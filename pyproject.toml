@@ -1,7 +1,7 @@
 [project]
-name = "ktgpt-chat"
-version = "2.0.0"
-description = "KTGPT v2 — Production RAG System with Hybrid Retrieval, Semantic Caching & Cost-Aware Routing"
+name = "mediquery"
+version = "1.0.0"
+description = "MediQuery — Production-grade clinical RAG decision support with cost-aware dual-model inference (Gemma 4 26B + Llama 3.1 8B)"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

@@ -10,7 +10,7 @@ interface ThemeCtx {
 
 const Ctx = createContext<ThemeCtx | null>(null);
 
-const STORAGE_KEY = "kt-gpt-theme";
+const STORAGE_KEY = "mediquery-theme";
 
 const getInitial = (): Theme => {
   if (typeof window === "undefined") return "light";

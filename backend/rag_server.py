@@ -1,23 +1,25 @@
 """
-KTGPT v2 — Production RAG Server (Modal Serverless)
-======================================================
-Main orchestrator that wires together all RAG components:
+MediQuery — Production Clinical RAG Server (Modal Serverless)
+================================================================
+Clinical decision support system with cost-aware dual-model inference.
 
-  Semantic Cache → Hybrid Retrieval → Confidence Gate →
-  Cost-Aware Router → vLLM Inference → NLI Faithfulness →
-  Cache & Return
+Main orchestrator that wires together all clinical RAG components:
+
+  Semantic Cache → Hybrid Retrieval (BM25 + Dense) → Confidence Gate →
+  Cost-Aware Clinical Router → vLLM Inference → NLI Faithfulness →
+  Cache & Return with Evidence Metadata
 
 Endpoints:
-  POST /          Chat with full RAG pipeline
-  POST /upload    Upload and index a document
-  GET  /stats     Retrieval index statistics
+  POST /          Clinical query with full RAG pipeline
+  POST /upload    Upload and index clinical documents (discharge summaries, etc.)
+  GET  /stats     Retrieval index + cost statistics
   POST /clear     Clear all indexed documents + cache
   GET  /health    System health check
 
 Runs entirely serverless on Modal with:
-  - RAG Orchestrator on T4 GPU (embeddings + reranking)
-  - Llama 3.1 8B on A10G (small model tier)
-  - Gemma 4 26B on A100 (big model tier)
+  - RAG Orchestrator on T4 GPU (embeddings + reranking + NLI)
+  - Llama 3.1 8B on A10G (small model tier — simple queries)
+  - Gemma 4 26B on A100 (big model tier — complex clinical reasoning)
   - Qdrant in local disk mode on shared Volume
 """
 
@@ -26,9 +28,9 @@ import modal
 # ─────────────────────────────────────────────────────────────────────────────
 #  Modal App & Shared Resources
 # ─────────────────────────────────────────────────────────────────────────────
-app = modal.App("ktgpt-rag-server")
+app = modal.App("mediquery-rag-server")
 
-vol = modal.Volume.from_name("ktgpt-rag-models", create_if_missing=True)
+vol = modal.Volume.from_name("mediquery-rag-models", create_if_missing=True)
 MOUNT = "/models"
 
 # ── Images ───────────────────────────────────────────────────────────────────
@@ -80,7 +82,7 @@ rag_image = (
 )
 @modal.concurrent(max_inputs=10)
 class SmallModel:
-    """Llama 3.1 8B Instruct — fast, cost-efficient for simple queries."""
+    """Llama 3.1 8B Instruct — fast, cost-efficient for simple clinical queries."""
 
     MODEL_DIR = f"{MOUNT}/llama-3.1-8b-instruct"
     MODEL_NAME = "llama-3.1-8b"
@@ -131,7 +133,7 @@ class SmallModel:
 )
 @modal.concurrent(max_inputs=10)
 class BigModel:
-    """Gemma 4 26B-A4B-it — powerful MoE for complex analytical queries."""
+    """Gemma 4 26B-A4B-it — powerful MoE for complex clinical reasoning."""
 
     MODEL_DIR = f"{MOUNT}/gemma-4-26b-a4b-it"
     MODEL_NAME = "gemma-4-26b"
@@ -179,25 +181,25 @@ class BigModel:
     secrets=[
         modal.Secret.from_name("hf-secret"),
         modal.Secret.from_name("serpapi"),
-        modal.Secret.from_name("redis-secret"),   # REDIS_URL
+        # modal.Secret.from_name("redis-secret"),   # Optional: uncomment if you have Redis
     ],
     timeout=7200,
     scaledown_window=600,
 )
 @modal.concurrent(max_inputs=20)
 class RAGServer:
-    """Main RAG orchestrator — wires all components together.
+    """MediQuery Clinical RAG Orchestrator — wires all components together.
 
     Pipeline:
     1. Check semantic cache (Redis)
     2. Hybrid retrieve (Qdrant local disk + BM25 → RRF → Rerank)
     3. Confidence gate (refuse if score < threshold)
-    4. Route query (small vs big model)
+    4. Route query (small vs big model, with clinical complexity awareness)
     5. Generate response (vLLM)
-    6. Faithfulness check (NLI)
-    7. Escalate if needed (small → big)
+    6. Faithfulness check (NLI) with clinical risk assessment
+    7. Escalate if needed (small → big for patient safety)
     8. Cache response
-    9. Return with metadata
+    9. Return with clinical evidence metadata
     """
 
     @modal.enter()
@@ -240,10 +242,10 @@ class RAGServer:
             qdrant_path=qdrant_path,
         )
 
-        # Hallucination guard
+        # Clinical hallucination guard
         self.guard = HallucinationGuard(nli_model=self.nli_model)
 
-        # Query router
+        # Cost-aware clinical query router
         self.router = QueryRouter()
 
         # Redis cache
@@ -264,7 +266,7 @@ class RAGServer:
         self.small_model = SmallModel()
         self.big_model = BigModel()
 
-        print("🎉 RAG Server fully initialized")
+        print("🏥 MediQuery Clinical RAG Server fully initialized")
 
     @modal.asgi_app()
     def serve(self):
@@ -279,7 +281,11 @@ class RAGServer:
         from prompts import build_prompt
         from hallucination import HallucinationGuard
 
-        web = FastAPI(title="KTGPT v2 RAG Server")
+        web = FastAPI(
+            title="MediQuery Clinical RAG API",
+            description="Production-grade clinical decision support with dual-model inference",
+            version="1.0.0",
+        )
         web.add_middleware(
             CORSMiddleware,
             allow_origins=["*"],
@@ -289,7 +295,7 @@ class RAGServer:
 
         server = self  # capture for closures
 
-        # ── POST / — Main Chat Endpoint ─────────────────────────────────────
+        # ── POST / — Main Clinical Query Endpoint ───────────────────────────
         @web.post("/")
         def chat(req: ChatRequest):
             import os
@@ -307,6 +313,8 @@ class RAGServer:
                         confidence=cached["confidence"],
                         faithful=True,
                         cached=True,
+                        clinical_risk="low",
+                        cost_usd=0.0,
                     )
 
             # ── Step 2: Web search (if enabled) ─────────────────────────────
@@ -366,6 +374,8 @@ class RAGServer:
                     confidence=retrieval_score,
                     faithful=True,
                     cached=False,
+                    clinical_risk="high",
+                    cost_usd=0.0,
                 )
 
             # ── Step 5: Route to model ──────────────────────────────────────
@@ -385,13 +395,15 @@ class RAGServer:
 
             # ── Step 7: Faithfulness check ──────────────────────────────────
             faithful = True
+            clinical_risk = "low"
             if context.strip() and response_text:
                 result = server.guard.check_faithfulness(context, response_text)
                 faithful = result.faithful
+                clinical_risk = result.clinical_risk
 
                 # Escalate if small model was unfaithful
                 if not faithful and model_name == "llama" and server.router.should_escalate(faithful):
-                    print("⬆️ Escalating: regenerating with Gemma 4 26B...")
+                    print("⬆️ Escalating: regenerating with Gemma 4 26B for clinical safety...")
                     model_name = "gemma"
                     prompt = build_prompt("gemma", context, req.question)
                     response_text = server.big_model.generate.remote(prompt)
@@ -399,6 +411,7 @@ class RAGServer:
                     # Re-check faithfulness
                     result = server.guard.check_faithfulness(context, response_text)
                     faithful = result.faithful
+                    clinical_risk = result.clinical_risk
 
             # ── Step 8: Cache response ──────────────────────────────────────
             if server.cache is not None and response_text:
@@ -410,22 +423,26 @@ class RAGServer:
                     confidence=retrieval_score,
                 )
 
-            # ── Step 9: Return with metadata ────────────────────────────────
+            # ── Step 9: Return with clinical metadata ───────────────────────
             model_display = {
                 "llama": "llama-3.1-8b",
                 "gemma": "gemma-4-26b",
             }.get(model_name, model_name)
 
+            cost_stats = server.router.cost_stats
+
             return ChatResponse(
-                response=response_text or "No response generated.",
+                response=response_text or "No clinical response generated.",
                 source=source,
                 model_used=model_display,
                 confidence=round(retrieval_score, 4),
                 faithful=faithful,
                 cached=False,
+                clinical_risk=clinical_risk,
+                cost_usd=server.router.COST_PER_QUERY.get(model_name, 0.0),
             )
 
-        # ── POST /upload — Document Upload & Indexing ───────────────────────
+        # ── POST /upload — Clinical Document Upload & Indexing ──────────────
         @web.post("/upload")
         async def upload(file: UploadFile = File(...)):
             content = await file.read()
@@ -445,15 +462,19 @@ class RAGServer:
                 dedup_removed=dedup_removed,
             )
 
-        # ── GET /stats — Index Statistics ───────────────────────────────────
+        # ── GET /stats — Index & Cost Statistics ────────────────────────────
         @web.get("/stats")
         def stats():
             r_stats = server.retriever.stats
+            cost_stats = server.router.cost_stats
             return StatsResponse(
                 documents=r_stats["documents"],
                 chunks=r_stats["chunks"],
                 bm25_terms=r_stats["bm25_terms"],
                 cache_entries=server.cache.size if server.cache else 0,
+                total_cost_usd=cost_stats["total_cost_usd"],
+                queries_small=cost_stats["queries_small"],
+                queries_big=cost_stats["queries_big"],
             )
 
         # ── POST /clear — Clear Everything ──────────────────────────────────

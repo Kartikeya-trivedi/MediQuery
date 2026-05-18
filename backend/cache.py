@@ -1,14 +1,14 @@
 """
-KTGPT v2 — Semantic Query Cache (Redis-backed)
-================================================
-Caches query→response pairs with semantic similarity matching.
+MediQuery — Semantic Query Cache (Redis-backed)
+==================================================
+Caches clinical query→response pairs with semantic similarity matching.
 
 Instead of exact-match caching, this module embeds each query and
-checks if a semantically similar query has been answered recently.
+checks if a semantically similar clinical query has been answered recently.
 If cosine similarity > threshold → cache hit → return instantly.
 
 Uses Redis for persistent storage across container restarts.
-Cache entries expire via TTL to prevent stale responses.
+Cache entries expire via TTL to prevent stale clinical responses.
 """
 
 import json
@@ -44,8 +44,8 @@ class SemanticCache:
     a Redis Search vector index (RediSearch module).
     """
 
-    CACHE_KEY_PREFIX = "ktgpt:cache:"
-    CACHE_INDEX_KEY = "ktgpt:cache:index"
+    CACHE_KEY_PREFIX = "mediquery:cache:"
+    CACHE_INDEX_KEY = "mediquery:cache:index"
 
     def __init__(
         self,

@@ -1,9 +1,9 @@
 """
-KTGPT v2 — Semantic Chunking & Deduplication
-==============================================
-Production-grade document chunking pipeline:
+MediQuery — Semantic Chunking & Deduplication for Clinical Documents
+======================================================================
+Production-grade clinical document chunking pipeline:
 
-1. Parse documents (PDF, TXT, MD)
+1. Parse documents (PDF, TXT, MD — discharge summaries, lab reports)
 2. Split into sentences
 3. Semantic chunking: group consecutive sentences by embedding similarity
 4. MinHash deduplication: remove near-duplicate chunks before indexing

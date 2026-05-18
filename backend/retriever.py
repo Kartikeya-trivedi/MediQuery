@@ -1,15 +1,16 @@
 """
-KTGPT v2 — Hybrid Retrieval with Reciprocal Rank Fusion
-=========================================================
-Production retrieval pipeline combining:
+MediQuery — Hybrid Clinical Retrieval with Reciprocal Rank Fusion
+====================================================================
+Production retrieval pipeline for clinical decision support combining:
 
 1. Dense retrieval: multilingual-e5-large embeddings in Qdrant
-2. Sparse retrieval: BM25 (rank_bm25) for keyword matching
+2. Sparse retrieval: BM25 (rank_bm25) for medical keyword matching
 3. RRF fusion: Reciprocal Rank Fusion to merge both ranked lists
 4. Cross-encoder reranking: ms-marco reranker on fused results
 
 Qdrant is used as the primary vector store with support for both
 dense and sparse vectors. BM25 runs in-memory via rank_bm25.
+Optimized for MIMIC-III discharge summaries and clinical notes.
 """
 
 from dataclasses import dataclass, field
@@ -45,7 +46,7 @@ class HybridRetriever:
     """
 
     # Qdrant collection config
-    COLLECTION_NAME = "ktgpt_rag"
+    COLLECTION_NAME = "mediquery_clinical"
     DENSE_VECTOR_SIZE = 1024  # multilingual-e5-large output dimension
     DENSE_DISTANCE = "Cosine"
 

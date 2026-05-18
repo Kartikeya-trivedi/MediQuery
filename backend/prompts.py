@@ -1,20 +1,37 @@
 """
-KTGPT v2 — Prompt Templates
-=============================
-Chat prompt formatters for Llama 3.1 Instruct and Gemma 4 Instruct.
+MediQuery — Clinical RAG Prompt Templates
+============================================
+Chat prompt formatters for Llama 3.1 Instruct and Gemma 4 Instruct
+in clinical decision support contexts.
+
 Each model uses its own special-token schema for optimal instruction following.
+Prompts are grounded in evidence-based clinical language to ensure
+high-fidelity diagnostic and therapeutic reasoning.
 """
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  System Prompt (shared across models)
 # ─────────────────────────────────────────────────────────────────────────────
-SYSTEM_PROMPT = """You are KTGPT, an advanced AI assistant made by Mindrix.
+SYSTEM_PROMPT = """You are MediQuery, a clinical decision support assistant designed for healthcare professionals.
 
-If context is provided, answer using ONLY the information from that context.
-If the context does not contain enough information to answer, say so honestly.
+You provide evidence-based medical analysis grounded ONLY in the clinical context provided to you (e.g., MIMIC-III discharge summaries, clinical notes, lab reports).
 
-Keep responses concise, accurate, and natural. Never fabricate information.
-Do not mention the word 'context' or any meta-explanations about your process."""
+STRICT RULES:
+1. Answer ONLY using information from the provided clinical context.
+2. If the context does not contain sufficient information, explicitly state: "Insufficient clinical evidence in the provided records to address this query."
+3. NEVER fabricate diagnoses, lab values, medications, or clinical findings.
+4. Always cite specific evidence from the context (e.g., "Per the discharge summary...", "Lab values indicate...").
+5. Flag potential drug interactions, contraindications, or critical findings with appropriate clinical urgency.
+6. Use standard medical terminology with brief explanations when appropriate.
+7. Clearly distinguish between established findings and clinical reasoning/differential diagnoses.
+8. Do NOT provide definitive treatment plans — frame recommendations as "considerations for clinical review."
+
+You support clinical workflows including:
+- Discharge summary analysis and key finding extraction
+- Medication reconciliation and interaction screening
+- Lab value trend interpretation
+- Differential diagnosis reasoning from documented findings
+- Clinical timeline reconstruction from EHR data"""
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -31,7 +48,10 @@ def build_llama_prompt(context: str, question: str) -> str:
         <|start_header_id|>assistant<|end_header_id|>
     """
     if context.strip():
-        user_content = f"Context:\n{context}\n\nQuestion: {question}"
+        user_content = (
+            f"Clinical Records:\n{context}\n\n"
+            f"Clinical Query: {question}"
+        )
     else:
         user_content = question
 
@@ -59,8 +79,8 @@ def build_gemma_prompt(context: str, question: str) -> str:
     if context.strip():
         user_content = (
             f"{SYSTEM_PROMPT}\n\n"
-            f"Context:\n{context}\n\n"
-            f"Question: {question}"
+            f"Clinical Records:\n{context}\n\n"
+            f"Clinical Query: {question}"
         )
     else:
         user_content = f"{SYSTEM_PROMPT}\n\n{question}"
@@ -80,8 +100,8 @@ def build_prompt(model_name: str, context: str, question: str) -> str:
 
     Args:
         model_name: 'llama' or 'gemma'
-        context: Retrieved context (may be empty)
-        question: User's question
+        context: Retrieved clinical context (may be empty)
+        question: Clinician's question
     """
     if model_name == "llama":
         return build_llama_prompt(context, question)

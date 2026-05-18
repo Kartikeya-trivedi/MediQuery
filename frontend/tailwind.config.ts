@@ -14,9 +14,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter Tight', 'Styrene B', 'system-ui', 'sans-serif'],
-        serif: ['Source Serif 4', 'Tiempos Headline', 'Copernicus', 'Georgia', 'serif'],
+        sans: ['Inter', 'Space Grotesk', 'system-ui', 'sans-serif'],
+        serif: ['DM Serif Display', 'Georgia', 'serif'],
         mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+        display: ['Space Grotesk', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
