@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Activity, FileText, Search, Stethoscope, Pill, HeartPulse } from "lucide-react";
+import { Activity, FileText, Search, Stethoscope, Pill, HeartPulse, Info } from "lucide-react";
 import { Composer } from "./Composer";
 
 interface UploadedDoc {
@@ -114,6 +114,13 @@ export const Welcome = ({ onSend, uploadedDocs, onFileUpload }: WelcomeProps) =>
         <p className="mt-3 text-sm text-muted-foreground max-w-md">
           Upload MIMIC-III discharge summaries or clinical documents to begin evidence-based analysis
         </p>
+        
+        <div className="mt-6 flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-left shadow-sm max-w-md w-full">
+          <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+          <p className="text-xs text-foreground/80 leading-relaxed">
+            <span className="font-semibold text-primary">Note:</span> The first query may take up to 2-3 minutes as serverless GPU containers boot from a cold start. Subsequent queries will be nearly instantaneous.
+          </p>
+        </div>
       </div>
 
       <Composer onSend={onSend} placeholder="Ask a clinical question…" autoFocus uploadedDocs={uploadedDocs} onFileUpload={onFileUpload} />
